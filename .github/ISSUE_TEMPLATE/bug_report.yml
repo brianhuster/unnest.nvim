@@ -1,0 +1,73 @@
+name: Bug Report
+description: File a bug/issue
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before** reporting an issue, make sure to read the all the documentations ([README](https://github.com/brianhuster/unnest.nvim), [`:h livepreview`](https://github.com/brianhuster/unnest.nvim/blob/main/doc/livepreview.txt)
+        and search [existing issues](https://github.com/brianhuster/unnest.nvim/issues) (even the [closed issues](https://github.com/brianhuster/unnest.nvim/issues?q=is%3Aissue+is%3Aclosed))
+
+  - type: checkboxes
+    attributes:
+      label: Did you read the documentation and check existing issues?
+      description: Make sure you checked all of the below before submitting an issue
+      options:
+        - label: I have read all the documentations ([README](https://github.com/brianhuster/unnest.nvim), [`:h livepreview`](https://github.com/brianhuster/unnest.nvim/blob/main/doc/livepreview.txt), [Wiki](https://github.com/brianhuster/unnest.nvim/wiki))
+          required: true
+        - label: I have updated the plugin to the latest version before submitting this issue
+          required: true
+        - label: I have searched the [existing issues](https://github.com/brianhuster/unnest.nvim/issues) and [closed issues](https://github.com/brianhuster/unnest.nvim/issues?q=is%3Aissue+is%3Aclosed) issues
+          required: true
+
+  - type: input
+    attributes:
+      label: "Neovim version (nvim -v)"
+      placeholder: "0.11.3"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: "Operating system/version"
+      placeholder: "Ubuntu 24.04.1"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is. Please include any related errors you see in Neovim.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior.
+      value: |
+        1. Clone the plugin `git clone https://github.com/brianhuster/unnest.nvim`
+        2. Open Nvim with minimal repro file `nvim --clean -u minimal_init.lua`
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Minimal config to reproduce
+      description: Minimal `init.lua` to reproduce this issue. Save as `minimal_init.lua` and run with `nvim -u minimal_init.lua`
+      value: |
+        vim.cmd.set "rtp+=/path/to/unnest.nvim"
+
+        --- More connfiguration here
+      render: lua
+    validations:
+      required: true

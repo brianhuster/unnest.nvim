@@ -4,20 +4,25 @@ if g.loaded_unnest then
 end
 g.loaded_unnest = true
 
-env.EDITOR = vim.iter(v.argv):map(vim.fn.shellescape):join(' ')
-
-local child_chan ---@type integer
+env.EDITOR = v.progpath
 
 api.nvim_create_user_command('UnnestEdit', function(cmd)
-	if child_chan then
-		vim.fn.jobstop(child_chan)
-	end
 	vim.cmd.enew()
-	child_chan = vim.fn.jobstart(cmd.args, {
+	local child_chan = vim.fn.jobstart(vim.fn.expandcmd(cmd.args), {
 		term = true,
 		env = {
 			NVIM_UNNEST_NOWAIT = 1,
 		}
+	})
+	local buf = api.nvim_get_current_buf()
+	api.nvim_create_autocmd('BufHidden', {
+		buffer = buf,
+		callback = function()
+			vim.fn.jobstop(child_chan)
+			vim.schedule(function()
+				api.nvim_buf_delete(buf, { force = true })
+			end)
+		end,
 	})
 	vim.cmd.startinsert()
 end, {
@@ -44,7 +49,7 @@ end
 
 api.nvim_create_autocmd('VimEnter', {
 	callback = function()
-		if vim.env.NVIM_UNNEST_NOWAIT then
+		if env.NVIM_UNNEST_NOWAIT then
 			send_cmd('edit ' .. vim.fn.fnameescape(api.nvim_buf_get_name(0)))
 			vim.cmd('qall!')
 			return
