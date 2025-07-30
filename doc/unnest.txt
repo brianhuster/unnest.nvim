@@ -1,23 +1,56 @@
-*unnest.nvim*                                                    *unnest*
+*unnest.nvim*       Avoid nested Nvim                                  *unnest*
 
+Upstream repository: https://github.com/brianhuster/unnest.nvim
 
                                         Type |gO| to see the table of contents.
 
 ==============================================================================
 1. Introduction                                       *unnest-introduction*
 
-`unnest.nvim` is a simple plugin that unnests nested Neovim sessions. When you
-open a Neovim instance inside another Neovim instance (for example, from a
-terminal), this plugin will automatically open a new tab in the parent Neovim
-instance with the same layout as the nested instance.
+Imagine that you are in a terminal buffer in Nvim, and you run a command that
+opens a new Nvim instance (e.g., `git commit`). Now you have a Neovim session
+running inside another Neovim session. This can be confusing and inefficient.
 
-The child Nvim instance will be kept running while the tab is opened, and will
-be closed when the tab is closed. This allows commands like `git commit`,
-`git mergetool` to work as expected.
+`unnest.nvim` solves this by detecting when it's being run in a nested
+session, then it will instruct the parent Neovim instance to open files in a
+in the parent Neovim instance.
+
+NOTE: there are some other plugins that do similar thing, like
+     `flatten.nvim` <https://github.com/willothy/flatten.nvim>,
+     `nvim-unception` <https://github.com/samjwill/nvim-unception>, etc. Please
+    make sure you have removed or disabled them before installing this plugin,
+     because they can conflict with each other.
 
 ==============================================================================
 2. Usage                                                 *unnest-usage*
 
-This plugin works automatically. There is no configuration needed.
+This plugin should works automatically. There is no configuration needed.
 
+When you run a command in terminal buffer that would opens a Nvim instance,
+     the parent Nvim instance will open a new tab with the same layout as the
+    child Nvim instance. The child Nvim instance will be kept until you close
+    that new tab. This is usefull when you use commands like `git commit`,
+    `git mergetool`, etc
+
+COMMANDS ~
+
+*:UnnestEdit* {cmd}
+    Run {cmd} in a Nvim terminal buffer in the current window. If it opens a
+    Nvim instance with a file path, the file will be opened in the parent Nvim
+    instance, and the child Nvim instance will be closed right away.
+
+    As you can see, the behavior is a bit different from the default behavior,
+    instead of opening a new tab, this command just opens file in the current
+    window, and the child Nvim instance is not kept. This is useful when you
+    want to use another terminal file explorer with Nvim.
+
+    Some example usages:
+
+    - Using with `fzf` <https://github.com/junegunn/fzf>: >vim
+        :UnnestEdit nvim $(fzf)
+<
+    - Using with `yazi` <https://github.com/sxyazi/yazi>: >vim
+        :UnnestEdit yazi
+<
+==============================================================================
  vim:tw=78:ts=8:sw=4:sts=4:et:ft=help:norl:
