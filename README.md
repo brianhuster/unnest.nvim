@@ -18,9 +18,11 @@ in the parent Neovim instance.
 - Simple to install and use : no configuration, no `setup()` is required.
 - Powerful
     - You use commands like `git commit`, `git rebase -i`, `git mergetool` in Nvim without any other plugins (as long as you set `git mergetool` to use Nvim)
-    - You can integrate external file explorers like [FZF](https://github.com/junegunn/fzf) or [Yazi](https://github.com/sxyazi/yazi) with Nvim
+    - You can integrate external file explorers like [FZF](https://github.com/junegunn/fzf), [Yazi](https://github.com/sxyazi/yazi), etc with Nvim
 
 ## Installation
+
+Require Nvim 0.11 or later.
 
 You can install `unnest.nvim` using any plugin manager that supports `git`, like [lazy.nvim](https://github.com/folke/lazy.nvim), [vim-plug](https://github.com/junegunn/vim-plug), etc. See the document of your plugin manager for how to install a plugin with them.
 

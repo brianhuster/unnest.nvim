@@ -26,16 +26,16 @@ NOTE: there are some other plugins that do similar thing, like
 
 This plugin should works automatically. There is no configuration needed.
 
-When you run a command in terminal buffer that would opens a Nvim instance,
-     the parent Nvim instance will open a new tab with the same layout as the
-    child Nvim instance. The child Nvim instance will be kept until you close
-    that new tab. This is usefull when you use commands like `git commit`,
-    `git mergetool`, etc
+When you run a command in terminal buffer that would open a Nvim instance, the
+parent Nvim instance will open a new tab with the same layout as the child
+Nvim instance. The child Nvim instance will be kept until you close that new
+tab. This is usefull when you use commands like `git commit`, `git mergetool`,
+etc
 
 COMMANDS ~
 
 *:UnnestEdit* {cmd}
-    Run {cmd} in a Nvim terminal buffer in the current window.
+    Run {cmd} in a Nvim terminal buffer in the current window. All
     |cmdline-special| characters in {cmd} are expanded. If it opens a Nvim
     instance with a file path, the file will be opened in the parent Nvim
     instance, and the child Nvim instance will be closed right away.
