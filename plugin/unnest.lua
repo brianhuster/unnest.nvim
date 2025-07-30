@@ -1,21 +1,10 @@
 local g, api, env, v = vim.g, vim.api, vim.env, vim.v
-if g.loaded_nonest then
+if g.loaded_unnest then
 	return
 end
-g.loaded_nonest = true
+g.loaded_unnest = true
 
 env.EDITOR = vim.iter(v.argv):map(vim.fn.shellescape):join(' ')
-
-vim.api.nvim_create_user_command('NonestEdit', function(args)
-	local mods = args.mods
-
-	vim.cmd(mods .. ' ' .. 'enew')
-	vim.bo.buflisted = false
-
-	vim.fn.jobstart(v.argv[1] .. ' ' .. vim.fn.shellescape('+let g:nonest_quitnow = 1') .. ' ' .. args.args, {
-		term = true
-	})
-end, { nargs = 1 })
 
 if not env.NVIM then
 	return
@@ -35,14 +24,8 @@ end
 
 api.nvim_create_autocmd('VimEnter', {
 	callback = function()
-		if vim.g.nonest_quitnow then
-			send_cmd('edit ' .. vim.fn.fnameescape(api.nvim_buf_get_name(0)))
-			vim.cmd('qall!')
-			return
-		end
-
 		local winlayout = vim.fn.winlayout()
-		local commands = require('nonest').winlayout_to_cmds(winlayout)
+		local commands = require('unnest').winlayout_to_cmds(winlayout)
 
 		send_cmd('tabnew')
 		vim.iter(commands):each(send_cmd)

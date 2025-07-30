@@ -1,0 +1,23 @@
+*unnest.nvim*                                                    *unnest*
+
+
+                                        Type |gO| to see the table of contents.
+
+==============================================================================
+1. Introduction                                       *unnest-introduction*
+
+`unnest.nvim` is a simple plugin that unnests nested Neovim sessions. When you
+open a Neovim instance inside another Neovim instance (for example, from a
+terminal), this plugin will automatically open a new tab in the parent Neovim
+instance with the same layout as the nested instance.
+
+The child Nvim instance will be kept running while the tab is opened, and will
+be closed when the tab is closed. This allows commands like `git commit`,
+`git mergetool` to work as expected.
+
+==============================================================================
+2. Usage                                                 *unnest-usage*
+
+This plugin works automatically. There is no configuration needed.
+
+ vim:tw=78:ts=8:sw=4:sts=4:et:ft=help:norl:

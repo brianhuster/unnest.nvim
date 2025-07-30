@@ -12,7 +12,8 @@ M.winlayout_to_cmds = function(winlayout)
 		table.insert(
 			commands,
 			('%s %s %s'):format(
-				mod, cmd,
+				mod or '',
+				cmd,
 				vim.fn.fnameescape(api.nvim_buf_get_name(api.nvim_win_get_buf(winid)))))
 		if vim.wo[winid].diff then
 			table.insert(commands, "diffthis")
