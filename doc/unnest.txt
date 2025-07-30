@@ -1,6 +1,5 @@
 *unnest.nvim*       Avoid nested Nvim                                  *unnest*
 
-Upstream repository: https://github.com/brianhuster/unnest.nvim
 
                                         Type |gO| to see the table of contents.
 
@@ -16,10 +15,10 @@ session, then it will instruct the parent Neovim instance to open files in a
 in the parent Neovim instance.
 
 NOTE: there are some other plugins that do similar thing, like
-     `flatten.nvim` <https://github.com/willothy/flatten.nvim>,
-     `nvim-unception` <https://github.com/samjwill/nvim-unception>, etc. Please
+    `flatten.nvim` <https://github.com/willothy/flatten.nvim>,
+    `nvim-unception` <https://github.com/samjwill/nvim-unception>, etc. Please
     make sure you have removed or disabled them before installing this plugin,
-     because they can conflict with each other.
+    because they can conflict with each other.
 
 ==============================================================================
 2. Usage                                                 *unnest-usage*
@@ -32,6 +31,7 @@ Nvim instance. The child Nvim instance will be kept until you close that new
 tab. This is usefull when you use commands like `git commit`, `git mergetool`,
 etc
 
+------------------------------------------------------------------------------
 COMMANDS ~
 
 *:UnnestEdit* {cmd}
@@ -53,5 +53,37 @@ COMMANDS ~
     - Using with `yazi` <https://github.com/sxyazi/yazi>: >vim
         :UnnestEdit yazi
 <
+------------------------------------------------------------------------------
+VARIABLES ~
+
+*g:loaded_unnest*
+    If this variable has been set before the plugin is loaded, the plugin will
+    not be loaded. You can set this variable in your |config| file to disable
+    the plugin.
+
+    You can also use it in |--cmd| to avoid your child Nvim process to open
+    file in its parent Nvim. For example: >sh
+        nvim --cmd "let g:loaded_unnest = 1" README.md
+<
 ==============================================================================
+3. Tips                                                *unnest-tips*
+
+How to use Nvim as the editor for git? ~
+
+This plugin already set $VISUAL and $EDITOR to `nvim`, so `git commit` and
+`git rebase -i` should use Nvim as the editor, unless you set have some
+settings that takes higher priority (like $GIT_EDITOR or `git config`).
+
+However, `git mergetool` and `git difftool` don't use either `$VISUAL` or
+`$EDITOR`, but you can use the following commands to set them to use Nvim: >sh
+    git config --global merge.tool nvimdiff
+    git config --global diff.tool nvimdiff
+
+==============================================================================
+CONTRIBUTING                                            *unnest-contributing*
+
+Bug reports, feature requests, and patches are welcome:
+    https://github.com/brianhuster/unnest.nvim
+
+
  vim:tw=78:ts=8:sw=4:sts=4:et:ft=help:norl:

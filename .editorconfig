@@ -1,7 +1,13 @@
 [*]
 indent_style = tab
 
-[*.txt]
+[.github/**.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# help files
+[doc/*.txt]
 indent_style = space
 indent_size = 4
 tab_width = 8
+spelling_language = en

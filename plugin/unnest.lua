@@ -4,6 +4,7 @@ if g.loaded_unnest then
 end
 g.loaded_unnest = true
 
+env.VISUAL = v.progpath
 env.EDITOR = v.progpath
 
 api.nvim_create_user_command('UnnestEdit', function(cmd)

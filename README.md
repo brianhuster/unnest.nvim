@@ -36,10 +36,3 @@ vim.pack.add { "https://github.com/brianhuster/unnest.nvim" }
 NOTE: there are some other plugins that do similar thing, like [flatten.nvim](https://github.com/willothy/flatten.nvim), [nvim-unception](https://github.com/samjwill/nvim-unception). Please make sure you have removed or disabled them before installing this plugin, because they can conflict with each other.
 
 See [`:h unnest`](./doc/unnest.txt) for more details.
-
-## How It Works
-
-1.  When a nested Neovim instance is started, the plugin connects to the parent instance via RPC.
-2.  It captures the window layout of the nested instance.
-3.  It sends commands to the parent instance to create a new tab with the same layout.
-4.  It sets up an autocmd so that when the new tab is closed, the parent Neovim instance is notified, and the nested instance is closed.
