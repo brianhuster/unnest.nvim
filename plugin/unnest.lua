@@ -15,6 +15,7 @@ api.nvim_create_user_command('UnnestEdit', function(cmd)
 			NVIM_UNNEST_NOWAIT = 1,
 		}
 	})
+	vim.w.unnest_chan = child_chan
 	local buf = api.nvim_get_current_buf()
 	api.nvim_create_autocmd('BufHidden', {
 		buffer = buf,
@@ -47,7 +48,9 @@ end
 local is_parent_clean = vim.fn.rpcrequest(
 	parent_chan,
 	'nvim_exec_lua',
-	[[ return not vim.list_contains(vim.opt.rtp:get(), vim.fn.stdpath('config')) ]],
+	[[ return not vim.list_contains(
+		vim.tbl_map(vim.fs.normalize, vim.opt.rtp:get()),
+		vim.fs.normalize(vim.fn.stdpath('config'))) ]],
 	{})
 
 --- Don't load this plugin if the parent Nvim is clean.
@@ -75,7 +78,10 @@ api.nvim_create_autocmd('VimEnter', {
 		send_cmd('tabnew')
 		vim.iter(commands):each(send_cmd)
 
+		vim.rpcnotify(parent_chan, 'nvim_tabpage_set_var', 0, 'unnest_socket', v.servername)
+
 		local tabpagenr = vim.rpcrequest(parent_chan, 'nvim_call_function', 'tabpagenr', {}) --[[@as integer]]
+		vim.rpcnotify(parent_chan, 'nvim_tabpage_set_var', 'unnest_child', v.servername)
 		vim.rpcnotify(parent_chan, 'nvim_create_autocmd', 'TabClosed', {
 			command = ([[if expand("<afile>") == %s | call rpcnotify(sockconnect('pipe', '%s', #{ rpc: v:true }), 'nvim_command', 'quitall!') | endif]])
 				:format(tabpagenr, v.servername),
