@@ -43,6 +43,19 @@ if not parent_chan or parent_chan == 0 then
 	vim.cmd("qall!")
 end
 
+--- If the parent Nvim's rtp doesn't contain the config dir, likely it is a clean Nvim instance.
+local is_parent_clean = vim.fn.rpcrequest(
+	parent_chan,
+	'nvim_exec_lua',
+	[[ return not vim.list_contains(vim.opt.rtp:get(), vim.fn.stdpath('config')) ]],
+	{})
+
+--- Don't load this plugin if the parent Nvim is clean.
+if is_parent_clean then
+	vim.fn.chanclose(parent_chan)
+	return
+end
+
 ---@param cmd string
 local function send_cmd(cmd)
 	vim.rpcnotify(parent_chan, 'nvim_command', cmd)

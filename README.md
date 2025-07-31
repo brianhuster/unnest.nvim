@@ -14,7 +14,7 @@ in the parent Neovim instance.
 
 ## Features
 
-- Minimal : just about 100 LOC
+- Minimal : just about 120 LOC
 - Simple to install and use : no configuration, no `setup()` is required.
 - Powerful
     - You use commands like `git commit`, `git rebase -i`, `git mergetool` in Nvim without any other plugins (as long as you set `git mergetool` to use Nvim)
