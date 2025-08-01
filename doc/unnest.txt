@@ -61,10 +61,6 @@ VARIABLES ~
     not be loaded. You can set this variable in your |config| file to disable
     the plugin.
 
-    You can also use it in |--cmd| to avoid your child Nvim process to open
-    file in its parent Nvim. For example: >sh
-        nvim --cmd "let g:loaded_unnest = 1" README.md
-<
 ==============================================================================
 3. Tips                                                *unnest-tips*
 
@@ -78,6 +74,15 @@ However, `git mergetool` and `git difftool` don't use either `$VISUAL` or
 `$EDITOR`, but you can use the following commands to set them to use Nvim: >sh
     git config --global merge.tool nvimdiff
     git config --global diff.tool nvimdiff
+
+I don't want child Nvim to open files in parent Nvim for a terminal session ~
+
+You just need to set `g:loaded_unnest` in |--cmd| flag of Nvim command. For
+example: >sh
+    nvim --cmd "let g:loaded_unnest = 1" README.md
+
+Alternatively, you can also remove environmental variable $NVIM >sh
+    unset NVIM
 
 ==============================================================================
 CONTRIBUTING                                            *unnest-contributing*
