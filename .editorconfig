@@ -9,7 +9,6 @@ indent_size = 2
 indent_style = space
 indent_size = 4
 
-# help files
 [doc/*.txt]
 indent_style = space
 indent_size = 4

@@ -1,3 +1,4 @@
 .pytest_cache
 Xtest_*
 __pycache__
+.venv/

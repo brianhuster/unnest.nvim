@@ -64,7 +64,7 @@ VARIABLES ~
 ==============================================================================
 3. Tips                                                *unnest-tips*
 
-How to use Nvim as the editor for git? ~
+HOW TO USE NVIM AS THE EDITOR FOR GIT? ~
 
 This plugin already set $VISUAL and $EDITOR to `nvim`, so `git commit` and
 `git rebase -i` should use Nvim as the editor, unless you set have some
@@ -75,13 +75,14 @@ However, `git mergetool` and `git difftool` don't use either `$VISUAL` or
     git config --global merge.tool nvimdiff
     git config --global diff.tool nvimdiff
 
-I don't want child Nvim to open files in parent Nvim for a terminal session ~
 
-You just need to set `g:loaded_unnest` in |--cmd| flag of Nvim command. For
+I DON'T WANT CHILD NVIM TO OPEN FILES IN PARENT NVIM FOR A TERMINAL SESSION ~
+
+You just need to set |g:loaded_unnest| in |--cmd| flag of Nvim command. For
 example: >sh
     nvim --cmd "let g:loaded_unnest = 1" README.md
 
-Alternatively, you can also remove environmental variable $NVIM >sh
+Alternatively, you can also remove environmental variable |$NVIM| >sh
     unset NVIM
 
 ==============================================================================

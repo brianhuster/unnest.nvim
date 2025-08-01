@@ -36,3 +36,14 @@ vim.pack.add { "https://github.com/brianhuster/unnest.nvim" }
 NOTE: there are some other plugins that do similar thing, like [flatten.nvim](https://github.com/willothy/flatten.nvim), [nvim-unception](https://github.com/samjwill/nvim-unception). Please make sure you have removed or disabled them before installing this plugin, because they can conflict with each other.
 
 See [`:h unnest`](./doc/unnest.txt) for more details.
+
+## Buy me a coffee
+
+If you find this project helpful, please consider supporting me :>
+
+<a href="https://paypal.me/brianphambinhan">
+    <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="Paypal" style="height: 69px;">
+</a>
+<a href="https://img.vietqr.io/image/mb-9704229209586831984-print.png?addInfo=Donate%20for%20unnest%20nvim%20plugin&accountName=PHAM%20BINH%20AN">
+    <img src="https://github.com/user-attachments/assets/f28049dc-ce7c-4975-a85e-be36612fd061" alt="VietQR" style="height: 85px;">
+</a>
