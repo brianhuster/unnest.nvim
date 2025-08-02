@@ -14,11 +14,17 @@ in the parent Neovim instance.
 
 ## Features
 
-- Minimal : just about 120 LOC
+- Minimal : < 150 LOC
 - Simple to install and use : no configuration, no `setup()` is required.
 - Powerful
     - You use commands like `git commit`, `git rebase -i`, `git mergetool` in Nvim without any other plugins (as long as you set `git mergetool` to use Nvim)
-    - You can integrate external file explorers like [FZF](https://github.com/junegunn/fzf), [Yazi](https://github.com/sxyazi/yazi), etc with Nvim
+    - `:UnnestEdit` allows you to integrate file explorers like [FZF](https://github.com/junegunn/fzf), [Yazi](https://github.com/sxyazi/yazi), etc with Nvim
+
+## Demo
+
+**Using unnest.nvim with `git commit` and `git mergetool`**
+
+https://github.com/user-attachments/assets/873a02d0-e2f6-4200-af8b-b46f4525107a
 
 ## Installation
 
