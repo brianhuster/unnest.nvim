@@ -8,25 +8,7 @@ env.VISUAL = v.progpath
 env.EDITOR = v.progpath
 
 api.nvim_create_user_command('UnnestEdit', function(cmd)
-	vim.cmd.enew()
-	local child_chan = vim.fn.jobstart(vim.fn.expandcmd(cmd.args), {
-		term = true,
-		env = {
-			NVIM_UNNEST_NOWAIT = 1,
-		}
-	})
-	vim.w.unnest_chan = child_chan
-	local buf = api.nvim_get_current_buf()
-	api.nvim_create_autocmd('BufHidden', {
-		buffer = buf,
-		callback = function()
-			vim.fn.jobstop(child_chan)
-			vim.schedule(function()
-				api.nvim_buf_delete(buf, { force = true })
-			end)
-		end,
-	})
-	vim.cmd.startinsert()
+	require('unnest').ex_edit(cmd)
 end, {
 	nargs = 1,
 	desc = 'Run {cmd} in a terminal buffer in curent window. If it opens a Nvim instance with a file path, the file will be opened in the parent Nvim instance, and the child Nvim instance will be closed right away.',
@@ -44,17 +26,16 @@ if not parent_chan or parent_chan == 0 then
 	vim.cmd("qall!")
 end
 
---- If the parent Nvim's rtp doesn't contain the config dir, likely it is a clean Nvim instance.
-local is_parent_clean = vim.fn.rpcrequest(
-	parent_chan,
-	'nvim_exec_lua',
-	[[ return not vim.list_contains(
-		vim.tbl_map(vim.fs.normalize, vim.opt.rtp:get()),
-		vim.fs.normalize(vim.fn.stdpath('config'))) ]],
-	{})
+-- Get path to the this plugin dir
+local path_to_this_file = debug.getinfo(1, 'S').source:sub(2)
+local unnest_dir = vim.fs.dirname(vim.fs.dirname(path_to_this_file))
 
---- Don't load this plugin if the parent Nvim is clean.
-if is_parent_clean then
+--- Check if the parent Nvim's rtp has path to this plugin, otherwise don't load it.
+local parent_runtime_paths = vim.rpcrequest(parent_chan, 'nvim_list_runtime_paths') --[[@as string[] ]]
+local parent_has_unnest = require('unnest').list_contains_path(parent_runtime_paths, unnest_dir)
+
+--- Don't load this plugin if the parent Nvim doesn't have this plugin.
+if not parent_has_unnest then
 	vim.fn.chanclose(parent_chan)
 	return
 end
