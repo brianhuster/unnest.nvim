@@ -37,9 +37,13 @@ Nvim 0.12 has a built-in plugin manager, so you can also install `unnest.nvim` u
 vim.pack.add { "https://github.com/brianhuster/unnest.nvim" }
 ```
 
-## Usage
+> [!WARNING]
+> There are some other plugins that do similar thing, like [flatten.nvim](https://github.com/willothy/flatten.nvim), [nvim-unception](https://github.com/samjwill/nvim-unception). Please make sure you have removed or disabled them before installing this plugin, because they can conflict with each other.
 
-NOTE: there are some other plugins that do similar thing, like [flatten.nvim](https://github.com/willothy/flatten.nvim), [nvim-unception](https://github.com/samjwill/nvim-unception). Please make sure you have removed or disabled them before installing this plugin, because they can conflict with each other.
+> [!WARNING]
+> This plugin doesn't support lazy-loading (and you shouldn't need it because this plugin already has very small startuptime)
+
+## Usage
 
 See [`:h unnest`](./doc/unnest.txt) for more details.
 
