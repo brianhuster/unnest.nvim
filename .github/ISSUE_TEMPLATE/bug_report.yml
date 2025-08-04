@@ -45,11 +45,17 @@ body:
   - type: textarea
     attributes:
       label: Steps To Reproduce
-      description: Steps to reproduce the behavior.
+      description: Steps to reproduce the behavior. You should use $NVIM_APPNAME for reproduce steps
       value: |
-        1. Clone the plugin `git clone https://github.com/brianhuster/unnest.nvim`
-        2. Open Nvim with minimal repro file `nvim --clean -u minimal_init.lua`
-        3. ...
+        1. export NVIM_APPNAME=nvim_unnest
+        2. nvim
+        3. Open config file for $NVIM_APPNAME=nvim_unnest
+        ```vim
+        :edit `=stdpath('config')..'/init.lua'`
+        ```
+        4. Write your minimal_config there and save with `:w ++p`
+        5. Restart Nvim
+        ... More steps here ...
     validations:
       required: true
 
@@ -63,7 +69,7 @@ body:
   - type: textarea
     attributes:
       label: Minimal config to reproduce
-      description: Minimal `init.lua` to reproduce this issue. Save as `minimal_init.lua` and run with `nvim -u minimal_init.lua`
+      description: Minimal `init.lua` to reproduce this issue. Save to $XDG_CONFIG_HOME/$NVIM_APPNAME/init.lua
       value: |
         vim.cmd.set "rtp+=/path/to/unnest.nvim"
 

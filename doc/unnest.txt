@@ -26,9 +26,9 @@ NOTE: there are some other plugins that do similar thing, like
 |unnest.nvim| should works automatically. There is no configuration needed.
 
 When you run a command in terminal buffer that would open a Nvim instance, the
-parent Nvim instance will open a new tab with the same layout as the child
+parent Nvim instance will open a new |tabpage| with the same layout as the child
 Nvim instance. The child Nvim instance will be kept until you close that new
-tab. This is usefull when you use commands like `git commit`, `git mergetool`,
+|tabpage|. This is usefull when you use commands like `git commit`, `git mergetool`,
 etc
 
 NOTE: this plugin won't work if you lazy-load it. And actually you shouldn't
@@ -38,15 +38,15 @@ need lazy-loading for this plugin because it has very small startup time.
 COMMANDS ~
 
 *:UnnestEdit* {cmd}
-    Run {cmd} in a Nvim terminal buffer in the current window. All
+    Run {cmd} in a Nvim terminal buffer in the current |window|. All
     |cmdline-special| characters in {cmd} are expanded. If it opens a Nvim
     instance with a file path, the file will be opened in the parent Nvim
     instance, and the child Nvim instance will be closed right away.
 
     As you can see, the behavior is a bit different from the default behavior,
-    instead of opening a new tab, this command just opens file in the current
-    window, and the child Nvim instance is not kept. This is useful when you
-    want to use another terminal file explorer with Nvim.
+    instead of opening a new |tabpage|, this command just opens file in the
+    current |window|, and the child Nvim instance is not kept. This is useful
+    when you want to use another terminal file explorer with Nvim.
 
     Some example usages:
 
