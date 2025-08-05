@@ -59,7 +59,7 @@ def test_winlayout(nvim):
                          "name": os.path.abspath('.editorconfig'),
                          "diff": False}]]]
     nvim.command(
-        'term nvim -d "README.md" "LICENSE" +"botright split .editorconfig"')
+        'term nvim -d "README.md" "LICENSE" +"botright split .editorconfig" +"tcd Xtest"')
     time.sleep(0.5)
 
     # Must be in a new tab
@@ -69,6 +69,9 @@ def test_winlayout(nvim):
     # the child Nvim hasn't been closed yet
     child = nvim.current.tabpage.vars['unnest_socket']
     assert nvim.funcs.sockconnect('pipe', child) != 0
+
+    # cwd must be the same as in child Nvim
+    assert nvim.funcs.getcwd(-1, 0) == os.path.join(os.getcwd(), 'Xtest')
 
     # winlayout must be the same as in child Nvim
     winlayout = nvim.funcs.winlayout()
