@@ -1,0 +1,43 @@
+name: Run tests with PUC Lua 5.1
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} with PUC Lua 5.1
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Set up Lua 5.1
+      uses: leafo/gh-actions-lua@v11
+      with:
+        luaVersion: '5.1.5'
+
+    - name: Set up Neovim
+      run: |
+        git clone --depth 1 https://github.com/neovim/neovim
+        cd neovim
+        make deps
+        cd build
+        cmake \
+          -DUSE_BUNDLED_LUAJIT=OFF \
+          -DUSE_BUNDLED_LUA=ON \
+          -DPREFER_LUA=ON \
+          -DLUA_INCLUDE_DIR=../../.lua/include \
+          -DLUA_LIBRARY=../../.lua/lib/liblua.a \
+          ..
+        sudo make install
+        cd ../..
+        nvim -v
+
+    - name: Run tests
+      run: make test
