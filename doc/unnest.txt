@@ -23,13 +23,13 @@ NOTE: there are some other plugins that do similar thing, like
 ==============================================================================
 2. Usage                                                 *unnest-usage*
 
-|unnest.nvim| should works automatically. There is no configuration needed.
+|unnest.nvim| should work automatically. There is no configuration needed.
 
 When you run a command in terminal buffer that would open a Nvim instance, the
 parent Nvim instance will open a new |tabpage| with the same layout as the child
 Nvim instance. The child Nvim instance will be kept until you close that new
 |tabpage|. This is usefull when you use commands like `git commit`, `git mergetool`,
-etc
+etc.
 
 NOTE: this plugin won't work if you lazy-load it. And actually you shouldn't
 need lazy-loading for this plugin because it has very small startup time.

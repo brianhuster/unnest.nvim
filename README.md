@@ -28,9 +28,9 @@ https://github.com/user-attachments/assets/873a02d0-e2f6-4200-af8b-b46f4525107a
 
 ## Installation
 
-Require Nvim 0.11 or later.
+Requires Nvim 0.11 or later.
 
-You can install `unnest.nvim` using any plugin manager that supports `git`, like [lazy.nvim](https://github.com/folke/lazy.nvim), [vim-plug](https://github.com/junegunn/vim-plug), etc. See the document of your plugin manager for how to install a plugin with them.
+You can install `unnest.nvim` using any plugin manager that supports `git`, like [lazy.nvim](https://github.com/folke/lazy.nvim), [vim-plug](https://github.com/junegunn/vim-plug), etc. See the documentation of your plugin manager for how to install a plugin with them.
 
 Nvim 0.12 has a built-in plugin manager, so you can also install `unnest.nvim` using
 ```lua
