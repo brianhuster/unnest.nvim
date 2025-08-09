@@ -3,7 +3,7 @@ name: Run tests
 on: [push, pull_request]
 
 jobs:
-  test:
+  test_lua_jit:
     name: Test on ${{ matrix.os }} with Neovim ${{ matrix.nvim_version }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -11,17 +11,57 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         nvim_version: [stable, nightly]
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python
+    - &setup-python
+      name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: 3.12
+
     - name: Set up Neovim
       uses: rhysd/action-setup-vim@v1
       with:
         neovim: true
         version: ${{ matrix.nvim_version }}
+
+    - name: Run tests
+      run: make test
+
+  test_puc_lua:
+    name: Test on ${{ matrix.os }} with Lua 5.1
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+    - *setup-python
+    - name: Set up Lua 5.1
+      uses: leafo/gh-actions-lua@v11
+      with:
+        luaVersion: '5.1.5'
+
+    - name: Set up Neovim
+      run: |
+        git clone --depth 1 https://github.com/neovim/neovim
+        cd neovim
+        make deps
+        cd build
+        cmake \
+          -DUSE_BUNDLED_LUAJIT=OFF \
+          -DUSE_BUNDLED_LUA=ON \
+          -DPREFER_LUA=ON \
+          -DLUA_INCLUDE_DIR=../../.lua/include \
+          -DLUA_LIBRARY=../../.lua/lib/liblua.a \
+          ..
+        sudo make install
+        cd ../..
+        nvim -v
+
     - name: Run tests
       run: make test
