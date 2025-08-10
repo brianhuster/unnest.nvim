@@ -29,11 +29,11 @@ end
 ---@param list string[]
 ---@param path string
 ---@return boolean
-M.list_contains_path = function(list, path)
-	---@param path string
+function M.list_contains_path(list, path)
+	---@param p string
 	---@return string
-	local function normalize_abspath(path)
-		return vim.fs.normalize(vim.fs.abspath(path))
+	local function normalize_abspath(p)
+		return vim.fs.normalize(vim.fs.abspath(p))
 	end
 
 	return vim.list_contains(
@@ -43,8 +43,10 @@ end
 
 ---@param winlayout vim.fn.winlayout.ret
 ---@return string[]
-M.winlayout_to_cmds = function(winlayout)
+function M.winlayout_to_cmds(winlayout)
 	local commands = {} ---@type string[]
+	local first_win = true -- first window in a row/col
+	local first_win_in_tab = true -- first window in a tab
 
 	---@param winid integer
 	---@param cmd string
@@ -59,48 +61,47 @@ M.winlayout_to_cmds = function(winlayout)
 		if vim.wo[winid].diff then
 			table.insert(commands, "diffthis")
 		end
+		first_win = false
+		first_win_in_tab = false
 	end
 
 	---@param layout vim.fn.winlayout.ret
-	---@param is_first boolean
-	local function process_winlayout(layout, is_first)
+	---@param last_split? 'vsplit'|'split'
+	local function process_winlayout(layout, last_split)
 		local type = layout[1]
 
 		---@param data vim.fn.winlayout.ret[]
 		---@param split_type "vsplit"|"split"
-		---@param first boolean
-		local function process_splits(data, split_type, first)
-			process_winlayout(data[1], first)
+		local function process_splits(data, split_type)
+			process_winlayout(data[1], split_type)
 
 			for i = 2, #data do
 				local winid = nil
 				if data[i][1] == 'leaf' then
-					winid = data[i][2]
+					winid = data[i][2] --[[@as integer]]
+					get_cmds_for_win(winid, split_type, first_win and "botright" or "belowright")
+				else
+					process_winlayout(data[i], split_type)
 				end
 
-				local position = i == #data and "botright" or "belowright"
-
-				get_cmds_for_win(winid --[[@as integer]], split_type, position)
-
-				if data[i][1] ~= 'leaf' then
-					process_winlayout(data[i], false)
+				if i == #data then
+					first_win = true
 				end
 			end
 		end
 
 		if type == 'leaf' then
-			local winid = layout[2]
-			if is_first then
-				get_cmds_for_win(winid --[[@as integer]], "edit")
-			end
+			local winid = layout[2] --[[@as integer]]
+			local cmd = first_win_in_tab and "edit" or (last_split == "vsplit" and "split" or "vsplit")
+			get_cmds_for_win(winid --[[@as integer]], cmd, "botright")
 		elseif type == 'col' then
-			process_splits(layout[2] --[[@as vim.fn.winlayout.ret[] ]], "split", is_first)
+			process_splits(layout[2] --[[@as vim.fn.winlayout.ret[] ]], "split")
 		elseif type == 'row' then
-			process_splits(layout[2] --[[@as vim.fn.winlayout.ret[] ]], "vsplit", is_first)
+			process_splits(layout[2] --[[@as vim.fn.winlayout.ret[] ]], "vsplit")
 		end
 	end
 
-	process_winlayout(winlayout, true)
+	process_winlayout(winlayout)
 	return commands
 end
 
