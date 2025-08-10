@@ -1,22 +1,27 @@
 import pynvim
+from pynvim import Nvim
 import pytest
 import utils
 import time
 import os
+from os.path import abspath
+from dataclasses import dataclass
+from typing import Optional
 
 
 @pytest.fixture
 def nvim():
     utils.init_env()
-
     nvim = pynvim.attach(
         'child', argv=["nvim", "--headless", "--embed"])
+
     yield nvim
+
     nvim.close()
     utils.clean()
 
 
-def test_command(nvim):
+def test_command(nvim: Nvim):
     """
     Test command :UnnestEdit
     """
@@ -41,25 +46,66 @@ def test_command(nvim):
         os.getcwd(), 'Xtest', 'tmp', 'test_command.txt')
 
 
-def test_winlayout(nvim):
+@dataclass
+class TestWinlayoutExpected:
+    winbuflayout: list
+    cwd: Optional[str] = None
+
+
+@pytest.mark.parametrize("cmd, expected", [
+    (
+        'term nvim -d "README.md" "LICENSE" +"botright split .editorconfig" +"tcd Xtest"',
+        TestWinlayoutExpected(
+            winbuflayout=['col',
+                          [['row',
+                            [['leaf', {
+                                "name": abspath('README.md'),
+                                "diff": True}],
+                             ['leaf', {
+                                 "name": abspath('LICENSE'),
+                                 "diff": True}]]],
+                           ['leaf', {
+                               "name": abspath('.editorconfig'),
+                               "diff": False}]]],
+            cwd=os.path.join(os.getcwd(), 'Xtest')
+        )
+    ),
+    (
+        'term nvim file1.txt +"split file2.txt" +"botright vsplit file3.txt" +"split file4.txt" +"botright vsplit file5.txt"',
+        TestWinlayoutExpected(
+            winbuflayout=['row',
+                          [['col',
+                            [['leaf', {
+                                "name": abspath('file2.txt'),
+                                "diff": False,
+                                }],
+                             ['leaf', {
+                                 "name": abspath('file1.txt'),
+                                 "diff": False,
+                                 }]]],
+                           ['col',
+                            [['leaf', {
+                                "name": abspath('file4.txt'),
+                                "diff": False,
+                                }],
+                             ['leaf', {
+                                 "name": abspath('file3.txt'),
+                                 "diff": False,
+                                 }]]],
+                           ['leaf', {
+                               "name": abspath('file5.txt'),
+                               "diff": False,
+                               }]]]
+        )
+    )
+])
+def test_winlayout(nvim: Nvim, cmd: str, expected: TestWinlayoutExpected):
     """
     Test winlayout when users use builtin terminal to open nested Nvim
     """
     tab = nvim.api.get_current_tabpage()
 
-    winbuflayout = ['col',
-                    [['row',
-                      [['leaf', {
-                          "name": os.path.abspath('README.md'),
-                          "diff": True}],
-                       ['leaf', {
-                           "name": os.path.abspath('LICENSE'),
-                           "diff": True}]]],
-                     ['leaf', {
-                         "name": os.path.abspath('.editorconfig'),
-                         "diff": False}]]]
-    nvim.command(
-        'term nvim -d "README.md" "LICENSE" +"botright split .editorconfig" +"tcd Xtest"')
+    nvim.command(cmd)
     time.sleep(0.5)
 
     # Must be in a new tab
@@ -71,11 +117,12 @@ def test_winlayout(nvim):
     assert nvim.funcs.sockconnect('pipe', child) != 0
 
     # cwd must be the same as in child Nvim
-    assert nvim.funcs.getcwd(-1, 0) == os.path.join(os.getcwd(), 'Xtest')
+    assert nvim.funcs.getcwd(-1, 0) == expected.cwd or os.getcwd()
 
     # winlayout must be the same as in child Nvim
     winlayout = nvim.funcs.winlayout()
-    assert utils.winlayout_handle_winid(nvim, winlayout) == winbuflayout
+    assert utils.winlayout_handle_winid(
+        nvim, winlayout) == expected.winbuflayout
 
     # Call :tabclose must close child Nvim, so sockconnect later must raise an
     # error
