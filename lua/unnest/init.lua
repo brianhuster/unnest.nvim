@@ -10,11 +10,11 @@ function M.ex_edit(cmd)
 		term = true,
 		env = {
 			NVIM_UNNEST_NOWAIT = 1,
-		}
+		},
 	})
 	vim.w.unnest_chan = child_chan
 	local buf = api.nvim_get_current_buf()
-	api.nvim_create_autocmd('BufHidden', {
+	api.nvim_create_autocmd("BufHidden", {
 		buffer = buf,
 		callback = function()
 			vim.fn.jobstop(child_chan)
@@ -36,9 +36,7 @@ function M.list_contains_path(list, path)
 		return vim.fs.normalize(vim.fs.abspath(p))
 	end
 
-	return vim.list_contains(
-		vim.tbl_map(normalize_abspath, list),
-		normalize_abspath(path))
+	return vim.list_contains(vim.tbl_map(normalize_abspath, list), normalize_abspath(path))
 end
 
 ---@param winlayout vim.fn.winlayout.ret
@@ -54,10 +52,8 @@ function M.winlayout_to_cmds(winlayout)
 	local function get_cmds_for_win(winid, cmd, mod)
 		table.insert(
 			commands,
-			('%s %s %s'):format(
-				mod or '',
-				cmd,
-				vim.fn.fnameescape(api.nvim_buf_get_name(api.nvim_win_get_buf(winid)))))
+			("%s %s %s"):format(mod or "", cmd, vim.fn.fnameescape(api.nvim_buf_get_name(api.nvim_win_get_buf(winid))))
+		)
 		if vim.wo[winid].diff then
 			table.insert(commands, "diffthis")
 		end
@@ -77,7 +73,7 @@ function M.winlayout_to_cmds(winlayout)
 
 			for i = 2, #data do
 				local winid = nil
-				if data[i][1] == 'leaf' then
+				if data[i][1] == "leaf" then
 					winid = data[i][2] --[[@as integer]]
 					get_cmds_for_win(winid, split_type, first_win and "botright" or "belowright")
 				else
@@ -90,13 +86,13 @@ function M.winlayout_to_cmds(winlayout)
 			end
 		end
 
-		if type == 'leaf' then
+		if type == "leaf" then
 			local winid = layout[2] --[[@as integer]]
 			local cmd = first_win_in_tab and "edit" or (last_split == "vsplit" and "split" or "vsplit")
 			get_cmds_for_win(winid --[[@as integer]], cmd, "botright")
-		elseif type == 'col' then
+		elseif type == "col" then
 			process_splits(layout[2] --[[@as vim.fn.winlayout.ret[] ]], "split")
-		elseif type == 'row' then
+		elseif type == "row" then
 			process_splits(layout[2] --[[@as vim.fn.winlayout.ret[] ]], "vsplit")
 		end
 	end
