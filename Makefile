@@ -27,8 +27,7 @@ test: .venv/touchfile
 	$(PYTEST) test
 
 lint:
-	VIMRUNTIME=$$(nvim --clean --headless +"lua io.stdout:write(vim.env.VIMRUNTIME)" +q) \
-	lua-language-server --check=. --configpath=.nvim.lua
+	nvim --clean -l scripts/luals.lua
 
 format:
 	stylua .
