@@ -1,0 +1,43 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  luals:
+    name: lua-language-server
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Neovim
+      uses: rhysd/action-setup-vim@v1
+      with:
+        neovim: true
+        version: nightly
+
+    - name: Set up lua-language-server
+      run: |
+        cd ..
+        mkdir -p .luals
+        curl https://github.com/LuaLS/lua-language-server/releases/download/3.15.0/lua-language-server-3.15.0-linux-x64.tar.gz -L -o .luals.tar.gz
+        tar xzf .luals.tar.gz -C .luals
+        echo "$(pwd)/.luals/bin" >> $GITHUB_PATH
+        cd -
+
+    - name: Lint
+      run: make lint
+
+  stylua:
+    name: stylua
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest # NOTE: we recommend pinning to a specific version in case of formatting changes
+          # CLI arguments
+          args: false
+      - run: make format
