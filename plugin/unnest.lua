@@ -62,10 +62,10 @@ api.nvim_create_autocmd("VimEnter", {
 		-- New tabpage should also stimulate cwd of nested Nvim
 		send_cmd("tcd " .. vim.fn.fnameescape(vim.fn.getcwd(-1, 0)))
 
+		-- For testing only
 		vim.rpcnotify(parent_chan, "nvim_tabpage_set_var", 0, "unnest_socket", v.servername)
 
 		local tabpagenr = vim.rpcrequest(parent_chan, "nvim_call_function", "tabpagenr", {}) --[[@as integer]]
-		vim.rpcnotify(parent_chan, "nvim_tabpage_set_var", "unnest_child", v.servername)
 		vim.rpcnotify(parent_chan, "nvim_create_autocmd", "TabClosed", {
 			command = ([[if expand("<afile>") == %s | call rpcnotify(sockconnect('pipe', '%s', #{ rpc: v:true }), 'nvim_command', 'quitall!') | endif]]):format(
 				tabpagenr,
