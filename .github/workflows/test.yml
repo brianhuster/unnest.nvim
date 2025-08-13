@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - &setup-python
       name: Set up Python
       uses: actions/setup-python@v5
@@ -39,7 +39,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - *setup-python
     - name: Set up Lua 5.1
       uses: leafo/gh-actions-lua@v11
