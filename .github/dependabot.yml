@@ -1,0 +1,9 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: cron
+      cronjob: "0 2 * * *"
+    commit-message:
+      prefix: "ci"
