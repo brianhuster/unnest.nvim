@@ -19,9 +19,9 @@ def init_env():
     os.makedirs(tmpdir, exist_ok=True)
     os.makedirs(xdg_config_home + "/nvim", exist_ok=True)
 
-    config_file = os.path.join(xdg_config_home, "nvim", "init.vim")
+    config_file = os.path.join(xdg_config_home, "nvim", "init.lua")
     with open(config_file, "w") as f:
-        f.write("setl rtp+=.")
+        f.write(f"vim.opt.rtp:prepend [[{os.path.abspath('.')}]]")
 
 
 def clean():

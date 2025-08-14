@@ -26,13 +26,7 @@ if not parent_chan or parent_chan == 0 then
 	vim.cmd("qall!")
 end
 
--- Get path to the this plugin dir
-local path_to_this_file = debug.getinfo(1, "S").source:sub(2)
-local unnest_dir = vim.fs.dirname(vim.fs.dirname(path_to_this_file))
-
---- Check if the parent Nvim's rtp has path to this plugin, otherwise don't load it.
-local parent_runtime_paths = vim.rpcrequest(parent_chan, "nvim_list_runtime_paths") --[[@as string[] ]]
-local parent_has_unnest = require("unnest").list_contains_path(parent_runtime_paths, unnest_dir)
+local parent_has_unnest = vim.rpcrequest(parent_chan, "nvim_exec_lua", "return pcall(require, 'unnest')", {})
 
 --- Don't load this plugin if the parent Nvim doesn't have this plugin.
 if not parent_has_unnest then
