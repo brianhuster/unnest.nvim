@@ -26,19 +26,6 @@ function M.ex_edit(cmd)
 	vim.cmd.startinsert()
 end
 
----@param list string[]
----@param path string
----@return boolean
-function M.list_contains_path(list, path)
-	---@param p string
-	---@return string
-	local function normalize_abspath(p)
-		return vim.fs.normalize(vim.fs.abspath(p))
-	end
-
-	return vim.list_contains(vim.tbl_map(normalize_abspath, list), normalize_abspath(path))
-end
-
 ---@param winlayout vim.fn.winlayout.ret
 ---@return string[]
 function M.winlayout_to_cmds(winlayout)

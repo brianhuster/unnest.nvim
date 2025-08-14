@@ -67,7 +67,7 @@ class TestWinlayoutExpected:
                            ['leaf', {
                                "name": abspath('.editorconfig'),
                                "diff": False}]]],
-            cwd=os.path.join(os.getcwd(), 'Xtest')
+            cwd=os.path.join(os.path.join(os.getcwd(), 'Xtest'))
         )
     ),
     (
