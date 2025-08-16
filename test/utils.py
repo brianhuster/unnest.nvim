@@ -21,7 +21,10 @@ def init_env():
 
     config_file = os.path.join(xdg_config_home, "nvim", "init.lua")
     with open(config_file, "w") as f:
-        f.write(f"vim.opt.rtp:prepend [[{os.path.abspath('.')}]]")
+        f.write(f"""
+                vim.opt.rtp:prepend [[{os.path.abspath('.')}]]
+                vim.v.testing = 1
+        """)
 
 
 def clean():

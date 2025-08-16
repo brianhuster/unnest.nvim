@@ -25,8 +25,8 @@ jobs:
         echo "$(pwd)/.luals/bin" >> $GITHUB_PATH
         cd -
 
-    - name: Lint
-      run: make lint
+    - name: Lint Lua code
+      run: make lintlua
 
   stylua:
     name: stylua
@@ -40,3 +40,19 @@ jobs:
           version: latest # NOTE: we recommend pinning to a specific version in case of formatting changes
           # CLI arguments
           args: --check .
+
+  vimdoc:
+    name: Lint help files
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      - name: Lint help files
+        run: make linthelp

@@ -1,4 +1,7 @@
+doc/tags
+
+# test
 .pytest_cache
-Xtest_*
+Xtest
 __pycache__
 .venv/
