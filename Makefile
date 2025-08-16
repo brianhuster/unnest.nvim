@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: help test lint format
+.PHONY: test lint lintlua linthelp format
 
 ifeq ($(OS),Windows_NT)
   PIP := .venv/Scripts/pip.exe
@@ -10,14 +10,6 @@ else
   PYTEST := .venv/bin/pytest
 endif
 
-help:
-	@echo "Commands:"
-	@echo "test     - Run all tests within the virtual environment"
-	@echo "          You can override the Python interpreter by setting the PYTHON variable,"
-	@echo "          e.g., 'make test PYTHON=python'"
-	@echo "lint     - Lint with lua-language-server"
-	@echo "format   - Format code with stylua"
-
 .venv/touchfile: test/requirements.txt
 	$(PYTHON) -m venv .venv
 	$(PIP) install -r test/requirements.txt
@@ -26,8 +18,13 @@ help:
 test: .venv/touchfile
 	$(PYTEST) test
 
-lint:
+lintlua:
 	nvim --clean -l scripts/luals.lua
+
+linthelp:
+	nvim --clean -l scripts/helptags.lua
+
+lint: lintlua linthelp
 
 format:
 	stylua .

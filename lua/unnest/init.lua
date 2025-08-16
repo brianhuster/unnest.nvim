@@ -12,7 +12,9 @@ function M.ex_edit(cmd)
 			NVIM_UNNEST_NOWAIT = 1,
 		},
 	})
-	vim.w.unnest_chan = child_chan
+	if vim.v.testing == 1 then
+		vim.w.unnest_chan = child_chan
+	end
 	local buf = api.nvim_get_current_buf()
 	api.nvim_create_autocmd("BufHidden", {
 		buffer = buf,
