@@ -1,7 +1,7 @@
-vim.cmd [[
+vim.cmd([[
 	set runtimepath^=.
 	helptags doc
-]]
+]])
 
 local exit_code = 0
 

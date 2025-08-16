@@ -66,7 +66,7 @@ class TestWinlayoutExpected:
                                  "diff": True}]]],
                            ['leaf', {
                                "name": abspath('.editorconfig'),
-                               "diff": False}]]],
+                               }]]],
             cwd=os.path.join(os.getcwd(), 'Xtest')
         )
     ),
@@ -77,24 +77,19 @@ class TestWinlayoutExpected:
                           [['col',
                             [['leaf', {
                                 "name": abspath('file2.txt'),
-                                "diff": False,
                                 }],
                              ['leaf', {
                                  "name": abspath('file1.txt'),
-                                 "diff": False,
                                  }]]],
                            ['col',
                             [['leaf', {
                                 "name": abspath('file4.txt'),
-                                "diff": False,
                                 }],
                              ['leaf', {
                                  "name": abspath('file3.txt'),
-                                 "diff": False,
                                  }]]],
                            ['leaf', {
                                "name": abspath('file5.txt'),
-                               "diff": False,
                                }]]]
         )
     )

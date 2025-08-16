@@ -39,9 +39,11 @@ def winlayout_handle_winid(nvim: pynvim.Nvim, winlayout):
     if isinstance(winlayout, list):
         return [winlayout_handle_winid(nvim, w) for w in winlayout]
     elif isinstance(winlayout, (int, float)):
-        return {
-            "name": nvim.api.buf_get_name(nvim.api.win_get_buf(winlayout)),
-            "diff": nvim.api.get_option_value("diff", {"win": winlayout})
+        result = {
+            "name": nvim.api.buf_get_name(nvim.api.win_get_buf(winlayout))
         }
+        if nvim.api.get_option_value("diff", {"win": winlayout}):
+            result["diff"] = True
+        return result
     else:
         return winlayout
