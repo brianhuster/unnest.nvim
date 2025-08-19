@@ -34,16 +34,7 @@ running `make format`.
 
 ### Testing
 
-You need a not-EOL Python3 interpreter installed to run the tests. You can run
-the tests locally by running `make test`.
-
-By default, the test expect the Python3 executable to be named `python3`. If it
-is named something else, you can override the interpreter by setting the
-`PYTHON`, e.g., `make test PYTHON=python`.
-
-Tests are written in Python using [pytest](https://pytest.org) framework with
-[pynvim](https://github.com/neovim/pynvim) library to interact with the Nvim
-instance.
+To test locally, run `make test`.
 
 ### Commit messages
 
