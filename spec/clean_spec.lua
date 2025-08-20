@@ -12,8 +12,8 @@ describe("Test with clean Nvim", function()
 		nvim.nvim_command("term nvim test_clean.txt")
 		vim.wait(500)
 
-		assert.are.same(nvim.nvim_get_current_win(), win)
-		assert.are.same(nvim.nvim_get_option_value("buftype", {}), "terminal")
+		expect(nvim.nvim_get_current_win()):same(win)
+		expect(nvim.nvim_get_option_value("buftype", {})):same("terminal")
 	end)
 
 	after_each(function()

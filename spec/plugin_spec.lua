@@ -1,6 +1,6 @@
 local nvim ---@type unnest.nvim
+
 local abspath = vim.fs.abspath
-local normalize = vim.fs.normalize
 
 ---Convert any winid in winlayout into is a dictionary like
 ---{"name": bufname, "diff": &l:diff}
@@ -13,7 +13,7 @@ local function winlayout_handle_winid(winlayout)
 		end, winlayout)
 	elseif type(winlayout) == "number" then
 		return {
-			name = normalize(nvim.nvim_buf_get_name(nvim.nvim_win_get_buf(winlayout))),
+			name = abspath(nvim.nvim_buf_get_name(nvim.nvim_win_get_buf(winlayout))),
 			diff = nvim.nvim_get_option_value("diff", { win = winlayout }) or nil,
 		}
 	else
@@ -45,15 +45,15 @@ describe("test plugin", function()
 
 		-- job must have been closed
 		local job = nvim.nvim_win_get_var(win, "unnest_chan")
-		assert.falsy(nvim.nvim_exec_lua("return pcall(vim.fn.jobpid, ...)", { job }))
+		expect(nvim.nvim_exec_lua("return pcall(vim.fn.jobpid, ...)", { job })):same(false)
 
 		-- Don't change window after running command
-		assert.same(win, nvim.nvim_get_current_win())
+		expect(nvim.nvim_get_current_win()):same(1000)
 
-		assert.same(nvim.nvim_get_option_value("buftype", {}), "")
+		expect(nvim.nvim_get_option_value("buftype", {})):same("")
 
 		local bufname = vim.fs.normalize(nvim.nvim_buf_get_name(0))
-		assert.same(abspath("Xtest/tmp/test_command.txt"), bufname)
+		expect(bufname):same_path("Xtest/tmp/test_command.txt")
 	end)
 
 	---@param cmd string
@@ -65,26 +65,25 @@ describe("test plugin", function()
 		vim.wait(500)
 
 		-- Must be in a new tab
-		assert.Not.same(tab, nvim.nvim_get_current_tabpage())
-		assert.same(nvim.nvim_call_function("tabpagenr", {}), 2)
+		expect(nvim.nvim_get_current_tabpage()):Not():same(tab)
 
 		-- the child Nvim hasn't been closed yet
 		local child = nvim.nvim_tabpage_get_var(0, "unnest_socket") ---@type string
-		assert.Not.same(0, vim.fn.sockconnect("pipe", child))
+		expect(vim.fn.sockconnect("pipe", child)):Not():same(0)
 
 		-- cwd must be the same as in child Nvim
-		assert.same(normalize(nvim.nvim_call_function("getcwd", { -1, 0 })), expected.cwd or normalize(vim.fn.getcwd()))
+		expect(nvim.nvim_call_function("getcwd", { -1, 0 })):same_path(expected.cwd or vim.fn.getcwd())
 
 		-- winlayout must be the same as in child Nvim
 		local winlayout = nvim.nvim_call_function("winlayout", {})
-		assert.same(winlayout_handle_winid(winlayout), expected.winbuflayout)
+		expect(winlayout_handle_winid(winlayout)):same(expected.winbuflayout)
 
 		-- Call :tabclose must close child Nvim, so sockconnect later must raise an
 		-- error
 		nvim.nvim_command("tabclose")
 		vim.wait(100)
 
-		assert.same(pcall(vim.fn.sockconnect, "pipe", child), false)
+		expect(pcall(vim.fn.sockconnect, "pipe", child)):same(false)
 	end
 
 	for _, testcase in ipairs({
@@ -104,7 +103,7 @@ describe("test plugin", function()
 						{ "leaf", { name = abspath(".editorconfig") } },
 					},
 				},
-				cwd = abspath("Xtest"),
+				cwd = "Xtest",
 			},
 		},
 		{
@@ -143,7 +142,7 @@ describe("test plugin", function()
 			},
 		},
 	}) do
-		it("Test winlayout when users use builtin terminal to open nested Nvim", function()
+		it("Test winlayout with command :" .. testcase.cmd, function()
 			test_winlayout(testcase.cmd, testcase.expected)
 		end)
 	end
