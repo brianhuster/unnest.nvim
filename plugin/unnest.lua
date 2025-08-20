@@ -26,7 +26,8 @@ if not parent_chan or parent_chan == 0 then
 	vim.cmd("qall!")
 end
 
-local parent_has_unnest = vim.rpcrequest(parent_chan, "nvim_exec_lua", "return pcall(require, 'unnest')", {})
+local parent = require("unnest.nvim"):new(parent_chan)
+local parent_has_unnest = parent.nvim_exec_lua("return pcall(require, 'unnest')", {})
 
 --- Don't load this plugin if the parent Nvim doesn't have this plugin.
 if not parent_has_unnest then
@@ -34,15 +35,13 @@ if not parent_has_unnest then
 	return
 end
 
----@param cmd string
-local function send_cmd(cmd)
-	vim.rpcnotify(parent_chan, "nvim_command", cmd)
-end
-
 api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		if env.NVIM_UNNEST_NOWAIT then
-			send_cmd("edit " .. vim.fn.fnameescape(api.nvim_buf_get_name(0)))
+			parent.rpcnotify.nvim_cmd({
+				cmd = "edit",
+				args = { api.nvim_buf_get_name(0) },
+			}, {})
 			vim.cmd("qall!")
 			return
 		end
@@ -50,18 +49,18 @@ api.nvim_create_autocmd("VimEnter", {
 		local winlayout = vim.fn.winlayout()
 		local commands = require("unnest").winlayout_to_cmds(winlayout)
 
-		send_cmd("tabnew")
-		vim.iter(commands):each(send_cmd)
+		parent.rpcnotify.nvim_command("tabnew")
+		vim.iter(commands):each(parent.rpcnotify.nvim_command)
 
 		-- New tabpage should also stimulate cwd of nested Nvim
-		send_cmd("tcd " .. vim.fn.fnameescape(vim.fn.getcwd(-1, 0)))
+		parent.rpcnotify.nvim_command("tcd " .. vim.fn.fnameescape(vim.fn.getcwd(-1, 0)))
 
 		if vim.v.testing == 1 then
-			vim.rpcnotify(parent_chan, "nvim_tabpage_set_var", 0, "unnest_socket", v.servername)
+			parent.rpcnotify.nvim_tabpage_set_var(0, "unnest_socket", v.servername)
 		end
 
-		local tabpagenr = vim.rpcrequest(parent_chan, "nvim_call_function", "tabpagenr", {}) --[[@as integer]]
-		vim.rpcnotify(parent_chan, "nvim_create_autocmd", "TabClosed", {
+		local tabpagenr = parent.nvim_call_function("tabpagenr", {}) --[[@as integer]]
+		parent.rpcnotify.nvim_create_autocmd("TabClosed", {
 			command = ([[if expand("<afile>") == %s | call rpcnotify(sockconnect('pipe', '%s', #{ rpc: v:true }), 'nvim_command', 'quitall!') | endif]]):format(
 				tabpagenr,
 				v.servername

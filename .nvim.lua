@@ -3,6 +3,8 @@ local luarc = {
 		workspace = {
 			library = {
 				os.getenv("VIMRUNTIME"),
+				"${3rd}/busted/library",
+				"${3rd}/luassert/library",
 			},
 			checkThirdParty = false,
 		},
@@ -11,6 +13,8 @@ local luarc = {
 			path = {
 				"lua/?.lua",
 				"lua/?/init.lua",
+				"?.lua",
+				"?/init.lua",
 			},
 		}
 	}

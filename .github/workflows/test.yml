@@ -15,11 +15,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-    - &setup-python
-      name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.12
 
     - name: Set up Neovim
       uses: rhysd/action-setup-vim@v1
@@ -40,11 +35,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-    - *setup-python
-    - name: Set up Lua 5.1
-      uses: leafo/gh-actions-lua@v11
+    - uses: leafo/gh-actions-lua@v11
       with:
-        luaVersion: '5.1.5'
+        luaVersion: "5.1.5"
 
     - name: Set up Neovim
       run: |

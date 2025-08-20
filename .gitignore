@@ -1,6 +1,7 @@
 doc/tags
 
 # test
+luassert
 .pytest_cache
 Xtest
 __pycache__
