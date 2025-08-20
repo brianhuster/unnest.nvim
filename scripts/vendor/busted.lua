@@ -1,6 +1,7 @@
 -- MIT License
 --
--- Copyright (c) 2020 TJ DeVries
+-- Copyright (c) 2020 TJ DeVries.
+-- Modified by Phạm Bình An (2025)
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +39,7 @@ local function get_trace(_, level, msg)
 	local info = debug.getinfo(level, "Sl")
 	while
 		info.what == "C"
-		or info.short_src:match("luassert[/\\].*%.lua$")
+		or info.short_src:match("busted.lua$")
 		or (info.source:sub(1, 1) == "@" and thisdir == dirname(info.source))
 	do
 		level = level + 1
@@ -62,7 +63,7 @@ print = function(...)
 	io.stdout:write("\r\n")
 end
 
-local mod = {}
+local M = {}
 
 local results = {}
 local current_description = {}
@@ -104,6 +105,7 @@ end
 
 local color_string = function(color, str)
 	local color_table = {
+		yellow = 33,
 		green = 32,
 		red = 31,
 	}
@@ -112,6 +114,7 @@ end
 
 local success = color_string("green", "Success")
 local fail = color_string("red", "Fail")
+local pending = color_string("yellow", "Pending")
 
 local header = string.rep("=", 40)
 
@@ -123,14 +126,16 @@ local format_results = function(res)
 	print(header)
 end
 
-mod.describe = function(desc, func)
+---@param desc string
+---@param func fun()
+M.describe = function(desc, func)
 	results.pass = results.pass or {}
 	results.fail = results.fail or {}
 	results.errs = results.errs or {}
 
-	describe = mod.inner_describe
+	_G.describe = M.inner_describe
 	local ok, msg, desc_stack = call_inner(desc, func)
-	describe = mod.describe
+	_G.describe = M.describe
 
 	if not ok then
 		table.insert(results.errs, {
@@ -140,7 +145,9 @@ mod.describe = function(desc, func)
 	end
 end
 
-mod.inner_describe = function(desc, func)
+---@param desc string
+---@param func fun()
+M.inner_describe = function(desc, func)
 	local ok, msg, desc_stack = call_inner(desc, func)
 
 	if not ok then
@@ -151,11 +158,13 @@ mod.inner_describe = function(desc, func)
 	end
 end
 
-mod.before_each = function(fn)
+---@param fn fun()
+M.before_each = function(fn)
 	table.insert(current_before_each[#current_description], fn)
 end
 
-mod.after_each = function(fn)
+---@param fn fun()
+M.after_each = function(fn)
 	table.insert(current_after_each[#current_description], fn)
 end
 
@@ -176,7 +185,9 @@ local run_each = function(tbl)
 	end
 end
 
-mod.it = function(desc, func)
+---@param desc string
+---@param func fun()
+M.it = function(desc, func)
 	run_each(current_before_each)
 	local ok, msg, desc_stack = call_inner(desc, func)
 	run_each(current_after_each)
@@ -201,14 +212,68 @@ mod.it = function(desc, func)
 	table.insert(to_insert, test_result)
 end
 
-describe = mod.describe
-it = mod.it
-before_each = mod.before_each
-after_each = mod.after_each
-assert = require("luassert")
+---@param desc string
+M.pending = function(desc)
+	local curr_stack = vim.deepcopy(current_description)
+	table.insert(curr_stack, desc)
+	print(pending, "||", table.concat(curr_stack, " "))
+end
+
+function M.expect(value)
+	local inspect = vim.inspect
+	local self = {
+		value = value,
+		["not"] = false,
+	}
+
+	---@return self
+	function self:Not()
+		self["not"] = not self["not"]
+		return self
+	end
+
+	---@return self
+	function self:same(expected)
+		assert(
+			vim.deep_equal(value, expected) == not self["not"],
+			("Expect %s and %s to %sbe the same"):format(
+				inspect(value),
+				inspect(expected),
+				self["not"] and "not " or ""
+			)
+		)
+		return self
+	end
+
+	---@param expected string
+	---@return self
+	function self:same_path(expected)
+		local normalize = function(path)
+			return vim.fs.abspath(vim.fs.normalize(path))
+		end
+		assert(
+			normalize(value) == normalize(expected) == not self["not"],
+			("Expect %s and %s to %sbe the same path"):format(
+				inspect(value),
+				inspect(expected),
+				self.Not and "not " or ""
+			)
+		)
+		return self
+	end
+
+	return self
+end
+
+_G.describe = M.describe
+_G.it = M.it
+_G.before_each = M.before_each
+_G.after_each = M.after_each
+_G.pending = M.pending
+_G.expect = M.expect
 
 ---@param file string
-mod.run = function(file)
+M.run = function(file)
 	file = vim.fs.normalize(file)
 
 	print("\n" .. header)
@@ -246,4 +311,4 @@ mod.run = function(file)
 	end)()
 end
 
-return mod
+return M
