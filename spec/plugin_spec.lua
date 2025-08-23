@@ -2,6 +2,23 @@ local nvim ---@type unnest.nvim
 
 local abspath = vim.fs.abspath
 
+local is_windows = vim.fn.has("win32") == 1
+
+local function setup_child()
+	nvim = require("unnest.nvim"):new(vim.fn.jobstart({ "nvim", "--headless", "--embed" }, {
+		rpc = true,
+		env = {
+			-- The parent Nvim instance of this one is `nvim -l`, so we
+			-- must unset $NVIM, otherwise it will hopelessly try to
+			-- control the Nvim that run busted
+			NVIM = "",
+			-- Unset to make it use POSIX shell to run tests for faster startup
+			-- time (on POSIX platforms). This doesn't affect Windows though.
+			SHELL = "",
+		},
+	}))
+end
+
 ---Convert any winid in winlayout into is a dictionary like
 ---{"name": bufname, "diff": &l:diff}
 ---@param winlayout vim.fn.winlayout.ret|integer
@@ -149,4 +166,69 @@ describe("test plugin", function()
 			test_winlayout(testcase.cmd, testcase.expected)
 		end)
 	end
+end)
+
+describe("test restore insert mode", function()
+	before_each(function()
+		setup_child()
+		nvim.nvim_command("term")
+		if is_windows then
+			--- Windows shell has slow startup time
+			vim.wait(1000)
+		end
+	end)
+
+	after_each(function()
+		vim.fn.jobstop(nvim.chan)
+	end)
+
+	it("Should restore insert mode for terminal buffers", function()
+		nvim.nvim_command("startinsert")
+		nvim.nvim_feedkeys("nvim test.txt" .. vim.keycode("<CR>"), "m", true)
+		vim.wait(500)
+		nvim.nvim_command("tabclose")
+
+		expect(nvim.nvim_get_mode().mode):same("t")
+	end)
+
+	it("Should not restore insert mode if the previous window is not the original window", function()
+		nvim.nvim_command("startinsert")
+		nvim.nvim_feedkeys("nvim test.txt" .. vim.keycode("<CR>"), "m", true)
+		vim.wait(500)
+		nvim.nvim_command("tabnew | tabprev | tabclose")
+
+		expect(nvim.nvim_get_mode().mode):same("n")
+	end)
+
+	it("Should not restore insert mode if the previous window buffer changes", function()
+		local win1 = nvim.nvim_get_current_win()
+
+		nvim.nvim_command("vert term")
+
+		local win2_buf = nvim.nvim_get_current_buf()
+
+		nvim.nvim_set_current_win(win1)
+		nvim.nvim_command("startinsert")
+		nvim.nvim_feedkeys("nvim test.txt" .. vim.keycode("<CR>"), "m", true)
+		vim.wait(500)
+
+		nvim.nvim_win_set_buf(win1, win2_buf)
+		nvim.nvim_command("tabclose")
+
+		expect(nvim.nvim_get_mode().mode):same("nt")
+	end)
+
+	it("Should not restore insert mode if the previous window buffer is not a terminal buffer", function()
+		local win = nvim.nvim_get_current_win()
+		local buf = nvim.nvim_create_buf(true, false)
+
+		nvim.nvim_command("startinsert")
+		nvim.nvim_feedkeys("nvim test.txt" .. vim.keycode("<CR>"), "m", true)
+		vim.wait(500)
+
+		nvim.nvim_win_set_buf(win, buf)
+		nvim.nvim_command("tabclose")
+
+		expect(nvim.nvim_get_mode().mode):same("n")
+	end)
 end)
