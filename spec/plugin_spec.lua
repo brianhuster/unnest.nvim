@@ -30,6 +30,9 @@ describe("test plugin", function()
 				-- must unset $NVIM, otherwise it will hopelessly try to
 				-- control the Nvim that run busted
 				NVIM = "",
+				-- Unset $SHELL to make tests use POSIX shell (sh) on POSIX
+				-- systems. This doesn't affect Windows though.
+				SHELL = "",
 			},
 		}))
 	end)
@@ -41,7 +44,7 @@ describe("test plugin", function()
 	it("Test command :UnnestEdit", function()
 		local win = nvim.nvim_get_current_win()
 		nvim.nvim_command("UnnestEdit nvim Xtest/tmp/test_command.txt")
-		vim.wait(500)
+		vim.wait(200)
 
 		-- job must have been closed
 		local job = nvim.nvim_win_get_var(win, "unnest_chan")
@@ -62,7 +65,7 @@ describe("test plugin", function()
 		local tab = nvim.nvim_get_current_tabpage()
 
 		nvim.nvim_command(cmd)
-		vim.wait(500)
+		vim.wait(200)
 
 		-- Must be in a new tab
 		expect(nvim.nvim_get_current_tabpage()):Not():same(tab)
