@@ -223,9 +223,6 @@ M.pending = function(desc)
 	print(pending, "||", table.concat(curr_stack, " "))
 end
 
----@class expectation
-local expectation = {}
-
 local function matcher(fun)
 	return function(self, ...)
 		fun(self, ...)
@@ -233,6 +230,14 @@ local function matcher(fun)
 		return self
 	end
 end
+
+---@class expectation
+local expectation = {
+	Not = function(self)
+		self._not = not self._not
+		return self
+	end,
+}
 
 --- Reverse the expectation of the next matcher only. Many :Not() can be
 --- chained, which will reversed the previous :Not(). For example:
