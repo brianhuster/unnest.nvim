@@ -46,6 +46,11 @@ api.nvim_create_autocmd("VimEnter", {
 			return
 		end
 
+		local win_id = parent.nvim_get_current_win()
+		local buf_id = parent.nvim_win_get_buf(win_id)
+		local buf_type = parent.nvim_get_option_value("buftype", { buf = buf_id })
+		local mode = parent.nvim_get_mode().mode
+
 		local winlayout = vim.fn.winlayout()
 		local commands = require("unnest").winlayout_to_cmds(winlayout)
 
@@ -67,5 +72,18 @@ api.nvim_create_autocmd("VimEnter", {
 			),
 			once = true,
 		})
+
+		-- Re-enable insert mode if the last window in the parent contained a
+		-- terminal buffer and we were in terminal insert mode, but only if the new
+		-- window (after closing the tab) is that same window.
+		if buf_type == "terminal" and mode == "t" then
+			parent.rpcnotify.nvim_create_autocmd("TabClosed", {
+				command = ([[if nvim_get_current_win() == %s && nvim_get_current_buf() == %s && &buftype == 'terminal' | startinsert | endif]]):format(
+					win_id,
+					buf_id
+				),
+				once = true,
+			})
+		end
 	end,
 })
