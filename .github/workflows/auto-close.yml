@@ -12,7 +12,7 @@ jobs:
     env:
       RESPONSE_LABEL: 'needs:response'
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v10
         with:
           days-before-issue-stale: -1
           days-before-issue-close: 30
