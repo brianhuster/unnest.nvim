@@ -15,7 +15,7 @@ end, {
 	complete = "shellcmdline",
 })
 
-if not env.NVIM or env.NVIM == "" then
+if not env.NVIM then
 	return
 end
 
