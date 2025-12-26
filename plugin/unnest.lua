@@ -15,14 +15,15 @@ end, {
 	complete = "shellcmdline",
 })
 
-if not env.NVIM then
+if not env.NVIM or env.NVIM == "" then
 	return
 end
 
-local _, parent_chan = pcall(vim.fn.sockconnect, "pipe", env.NVIM, { rpc = true })
+local success, result = pcall(vim.fn.sockconnect, "pipe", env.NVIM, { rpc = true })
+local parent_chan = success and result or 0
 
-if not parent_chan or parent_chan == 0 then
-	io.stderr:write("Nvim failed to connect to parent")
+if not success or not parent_chan or parent_chan == 0 then
+	io.stderr:write("Nvim failed to connect to parent: " .. tostring(result) .. "\n")
 	vim.cmd("qall!")
 end
 
