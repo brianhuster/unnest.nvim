@@ -1,15 +1,17 @@
 local nvim = {}
 
----@class unnest.nvim_api
----@field nvim_exec_lua fun(code: string, fargs: any[]): any|vim.NIL
+---@class vim.Api
 vim.api = vim.api
 
----@class unnest.nvim: unnest.nvim_api
+---@class unnest.NvimApi: vim.Api
+---@field nvim_exec_lua fun(code: string, fargs: any[]): any|vim.NIL
+
+---@class unnest.Nvim: unnest.NvimApi
 ---@field chan integer
----@field rpcnotify unnest.nvim_api
+---@field rpcnotify unnest.NvimApi
 
 ---@param chan integer
----@return unnest.nvim
+---@return unnest.Nvim
 function nvim:new(chan)
 	local child = setmetatable({}, {
 		__index = function(_, key)
