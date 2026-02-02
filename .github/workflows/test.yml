@@ -16,6 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - &setup-uv
+      uses: astral-sh/setup-uv@v7
+
     - name: Set up Neovim
       uses: rhysd/action-setup-vim@v1
       with:
@@ -35,6 +38,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+    - *setup-uv
     - uses: leafo/gh-actions-lua@v12
       with:
         luaVersion: "5.1.5"

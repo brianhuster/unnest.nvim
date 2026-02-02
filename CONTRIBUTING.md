@@ -3,7 +3,8 @@
 ## Reporting issues
 
 If you have a problem with unnest.nvim, please [open an
-issue](https://github.com/brianhuster/unnest.nvim/issues/new) and do as instructed
+issue](https://github.com/brianhuster/unnest.nvim/issues/new) and do as
+instructed
 
 ## Pull requests
 
@@ -34,7 +35,18 @@ running `make format`.
 
 ### Testing
 
-To test locally, run `make test`.
+Tests are written in Python using
+[pytest](https://github.com/pytest-dev/pytest) and
+[pynvim](https://github.com/neovim/pynvim).
+
+To test locally, first you need to install
+[uv](https://github.com/astral-sh/uv). Then you can just run `make test`.
+You can make test use your Python executable of choice with `make test
+PYTHON=path/to/python`.
+
+For how to control a Nvim instance in test with pynvim, see [if_pyth
+documentation](https://neovim.io/doc/user/if_pyth.html) and [pynvim
+documentation](https://pynvim.readthedocs.io/en/latest/).
 
 ### Commit messages
 
