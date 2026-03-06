@@ -6,6 +6,7 @@ g.loaded_unnest = true
 
 env.VISUAL = v.progpath
 env.EDITOR = v.progpath
+env.MANPAGER = v.progpath .. " +Man!"
 
 api.nvim_create_user_command("UnnestEdit", function(cmd)
 	require("unnest").ex_edit(cmd)
