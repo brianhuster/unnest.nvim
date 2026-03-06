@@ -93,6 +93,27 @@ class WinlayoutExpected:
                                "name": abspath('file5.txt'),
                                }]]]
         )
+    ),
+    (
+        'term nvim file1.txt +"botright vsplit | enew"',
+        WinlayoutExpected(winbuflayout=[
+            'row',
+            [
+                [
+                    'leaf',
+                    {
+                        'name': abspath('file1.txt'),
+                        },
+                    ],
+                [
+                    'leaf',
+                    {
+                        'name': '',
+                        },
+                    ],
+                ],
+            ]
+        )
     )
 ])
 def test_winlayout(vim: Nvim, cmd: str, expected: WinlayoutExpected):

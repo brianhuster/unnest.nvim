@@ -39,10 +39,11 @@ function M.winlayout_to_cmds(winlayout)
 	---@param cmd string
 	---@param mod? string
 	local function get_cmds_for_win(winid, cmd, mod)
-		table.insert(
-			commands,
-			("%s %s %s"):format(mod or "", cmd, vim.fn.fnameescape(api.nvim_buf_get_name(api.nvim_win_get_buf(winid))))
-		)
+		local bufname = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
+		if bufname == "" then
+			cmd = cmd .. " | enew"
+		end
+		table.insert(commands, ("%s %s %s"):format(mod or "", cmd, vim.fn.fnameescape(bufname)))
 		if vim.wo[winid].diff then
 			table.insert(commands, "diffthis")
 		end
