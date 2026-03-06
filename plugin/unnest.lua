@@ -36,6 +36,15 @@ if not parent_has_unnest then
 	return
 end
 
+---@param cmd string|{ method: string, args: any[] }
+local function handle_command(cmd)
+	if type(cmd) == "string" then
+		parent.rpcnotify.nvim_command(cmd)
+	else
+		parent.rpcnotify[cmd.method](unpack(cmd.args))
+	end
+end
+
 api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		if env.NVIM_UNNEST_NOWAIT then
@@ -51,7 +60,7 @@ api.nvim_create_autocmd("VimEnter", {
 		local commands = require("unnest").winlayout_to_cmds(winlayout)
 
 		parent.rpcnotify.nvim_command("tabnew")
-		vim.iter(commands):each(parent.rpcnotify.nvim_command)
+		vim.iter(commands):each(handle_command)
 
 		-- New tabpage should also stimulate cwd of nested Nvim
 		parent.rpcnotify.nvim_command("tcd " .. vim.fn.fnameescape(vim.fn.getcwd(-1, 0)))

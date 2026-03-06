@@ -29,7 +29,7 @@ function M.ex_edit(cmd)
 end
 
 ---@param winlayout vim.fn.winlayout.ret
----@return string[]
+---@return string|{ method: string, args: any[] }[]
 function M.winlayout_to_cmds(winlayout)
 	local commands = {} ---@type string[]
 	local first_win = true -- first window in a row/col
@@ -39,13 +39,32 @@ function M.winlayout_to_cmds(winlayout)
 	---@param cmd string
 	---@param mod? string
 	local function get_cmds_for_win(winid, cmd, mod)
-		local bufname = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
+		local buf = api.nvim_win_get_buf(winid)
+		local bufname = api.nvim_buf_get_name(buf)
 		if bufname == "" then
 			cmd = cmd .. " | enew"
 		end
 		table.insert(commands, ("%s %s %s"):format(mod or "", cmd, vim.fn.fnameescape(bufname)))
 		if vim.wo[winid].diff then
 			table.insert(commands, "diffthis")
+		end
+		-- Sometimes `nvim +Man!` cannot recognize the name of the man page.
+		-- And some shells like fish may provide `man` built-in with some man
+		-- pages unrecognized by standard `man` executable. In these cases,
+		-- Nvim may still recognize the name of the manpage (e.g `man://help`),
+		-- but `:edit man://help` will still fail. I considered sending a PR to
+		-- Nvim to invoke `man` from shell, but I think that could be a
+		-- breaking change, because the man page the shell may have the same
+		-- name but different content from the one that `man` executable
+		-- provides (as the result, it could be a breaking change for those who
+		-- use `man` for C programming for example).
+		if bufname:sub(1, 6) == "man://" then
+			table.insert(commands, "setlocal modifiable")
+			table.insert(commands, {
+				method = "nvim_buf_set_lines",
+				args = { 0, 0, -1, false, api.nvim_buf_get_lines(buf, 0, -1, false) },
+			})
+			table.insert(commands, "setlocal nomodifiable")
 		end
 		first_win = false
 		first_win_in_tab = false

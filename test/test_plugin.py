@@ -7,6 +7,7 @@ import os
 from os.path import abspath
 from dataclasses import dataclass
 from typing import Optional
+import sys
 
 
 @pytest.fixture
@@ -149,3 +150,20 @@ def test_winlayout(vim: Nvim, cmd: str, expected: WinlayoutExpected):
     with pytest.raises(pynvim.api.common.NvimError) as connect_info:
         vim.funcs.sockconnect('pipe', child)
     assert "connection failed: connection refused" in str(connect_info.value)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Windows doesn't have man")
+@pytest.mark.parametrize("text, bufname", [
+    ("hello world", "man://"),
+    ("HELLO_WORLD(1) hello world", "man://hello_world(1)")
+])
+def test_manpage(vim: Nvim, text: str, bufname: str):
+    """
+    Test if the plugin works with `echo something | nvim +Man!`
+    """
+    vim.command(f"term echo '{text}' | nvim +Man!")
+    time.sleep(0.2)
+
+    cur_buf = vim.current.buffer
+    assert cur_buf.name == bufname
+    assert cur_buf[0] == text
