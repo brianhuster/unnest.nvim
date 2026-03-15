@@ -20,9 +20,7 @@ function M.ex_edit(cmd)
 		buffer = buf,
 		callback = function()
 			vim.fn.jobstop(child_chan)
-			vim.schedule(function()
-				api.nvim_buf_delete(buf, { force = true })
-			end)
+			api.nvim_buf_delete(buf, { force = true })
 		end,
 	})
 	vim.cmd.startinsert()
