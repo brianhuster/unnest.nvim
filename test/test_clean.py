@@ -19,7 +19,7 @@ def test_plugin(vim):
     win = vim.current.window
 
     vim.command('term nvim test_clean.txt')
-    time.sleep(0.2)
+    time.sleep(1)
 
     # Don't change window after running command
     assert win == vim.current.window
