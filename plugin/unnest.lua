@@ -7,6 +7,7 @@ g.loaded_unnest = true
 env.VISUAL = v.progpath
 env.EDITOR = v.progpath
 env.MANPAGER = v.progpath .. " +Man!"
+env.NVIM_UNNEST_PARENT = "1"
 
 api.nvim_create_user_command("UnnestEdit", function(cmd)
 	require("unnest").ex_edit(cmd)
@@ -16,7 +17,7 @@ end, {
 	complete = "shellcmdline",
 })
 
-if not env.NVIM then
+if not env.NVIM or env.NVIM_UNNEST_PARENT ~= "1" then
 	return
 end
 
@@ -28,13 +29,6 @@ if not parent_chan or parent_chan == 0 then
 end
 
 local parent = require("unnest.nvim"):new(parent_chan)
-local parent_has_unnest = parent.nvim_exec_lua("return pcall(require, 'unnest')", {})
-
---- Don't load this plugin if the parent Nvim doesn't have this plugin.
-if not parent_has_unnest then
-	vim.fn.chanclose(parent_chan)
-	return
-end
 
 ---@param cmd string|{ method: string, args: any[] }
 local function handle_command(cmd)

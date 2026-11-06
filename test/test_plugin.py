@@ -10,12 +10,6 @@ from typing import Optional
 import sys
 
 
-pytestmark = pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="Nested Nvim process tests hang on Windows",
-)
-
-
 @pytest.fixture
 def vim():
     utils.init_env()
