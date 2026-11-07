@@ -29,7 +29,7 @@ def test_command(vim: Nvim):
     first_win = vim.current.window
 
     vim.command('UnnestEdit nvim Xtest/tmp/test_command.txt')
-    time.sleep(0.2)
+    time.sleep(1)
 
     cur_win = vim.current.window
 
@@ -124,7 +124,7 @@ def test_winlayout(vim: Nvim, cmd: str, expected: WinlayoutExpected):
     first_tab = vim.current.tabpage
 
     vim.command(cmd)
-    time.sleep(0.2)
+    time.sleep(1)
 
     # Must be in a new tabpage now
     cur_tab = vim.current.tabpage
@@ -146,7 +146,7 @@ def test_winlayout(vim: Nvim, cmd: str, expected: WinlayoutExpected):
     # Call :tabclose must close child Nvim, so sockconnect later must raise an
     # error
     vim.command('tabclose')
-    time.sleep(0.1)
+    time.sleep(1)
     with pytest.raises(pynvim.api.common.NvimError) as connect_info:
         vim.funcs.sockconnect('pipe', child)
     assert "connection failed: connection refused" in str(connect_info.value)
@@ -162,7 +162,7 @@ def test_manpage(vim: Nvim, text: str, bufname: str):
     Test if the plugin works with `echo something | nvim +Man!`
     """
     vim.command(f"term echo '{text}' | nvim +Man!")
-    time.sleep(0.2)
+    time.sleep(1)
 
     cur_buf = vim.current.buffer
     assert cur_buf.name == bufname
